@@ -15,7 +15,7 @@
  * 
  * @category   Landofcoder
  * @package    Lof_All
- * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
+ * @copyright  Copyright (c) 2019 Landofcoder (https://www.landofcoder.com/)
  * @license    https://www.landofcoder.com/LICENSE-1.0.html
  */
 
