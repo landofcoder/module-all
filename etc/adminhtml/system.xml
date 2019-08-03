@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Landofcoder
+ * 
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the landofcoder.com license that is
+ * available through the world-wide-web at this URL:
+ * https://landofcoder.com/license
+ * 
+ * DISCLAIMER
+ * 
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ * 
+ * @category   Landofcoder
+ * @package    Lof_All
+ * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
+ * @license    https://www.landofcoder.com/LICENSE-1.0.html
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+	<system>
+		 <tab id="landofcoder" translate="label" sortOrder="400">
+            <label><![CDATA[<a href="https://landofcoder.com" target="_BLANK" title=""Magento Marketplace, Opencart Marketplace, Magento 2 Extension, Free Magento Extension, Opencart Advanced Reports">landofcoder.com</a>]]></label>
+        </tab>
+		<section id="lofall" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+			<class>separator-top</class>
+			<label>All</label>
+			<tab>landofcoder</tab>
+			<resource>Lof_All::config</resource>
+			<group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>General Settings</label>
+				
+				<field id="enable_bootstrap_js" translate="label comment" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enabled Bootstrap Js</label>
+					<comment>Version: 3.3.5</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+
+				<field id="enable_owlcarousel" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enabled Owl Carousel Js</label>
+					<comment>Version: 2.0.0-beta.3</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+
+				<field id="enable_colorbox" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enabled Colorbox Popup Js</label>
+					<comment>Version: 1.5.14</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+
+				<field id="enable_fancybox" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enabled Fancybox Popup Js</label>
+					<comment>Version: 2.1.5</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+
+				<field id="enable_fancybox_mousewell" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enabled Fancybox Mousewell Js</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends><field id="enable_fancybox">1</field></depends>
+				</field>
+				<field id="custom_css" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Custom CSS</label>
+					<comment>Add custom css code at here to apply it for the frontend</comment>
+				</field>
+			</group>
+		</section>
+		<section id="loflicense" translate="label" type="text" sortOrder="990" showInDefault="1" showInWebsite="1" showInStore="1">
+			<class>separator-top</class>
+			<label>Manage Licenses</label>
+			<tab>landofcoder</tab>
+			<resource>Lof_All::config</resource>
+			<group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="licenses" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Manage Licenses</label>
+					<frontend_model>Lof\All\Block\Adminhtml\System\ListLicense</frontend_model>
+				</field>
+			</group>
+		</section>
+		<section id="lofmarket" translate="label" type="text" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+			<class>separator-top</class>
+			<label>Market</label>
+			<tab>landofcoder</tab>
+			<resource>Lof_All::config</resource>
+			<group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="licenses" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Market</label>
+					<frontend_model>Lof\All\Block\Adminhtml\System\Market</frontend_model>
+				</field>
+			</group>
+		</section>
+	</system>
+</config>

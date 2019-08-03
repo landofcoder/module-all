@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Landofcoder
+ * 
+ * NOTICE OF LICENSE
+ * 
+ * This source file is subject to the venustheme.com license that is
+ * available through the world-wide-web at this URL:
+ * http://landofcoder.com/license
+ * 
+ * DISCLAIMER
+ * 
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ * 
+ * @category   Landofcoder
+ * @package    Lof_All
+ * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
+ * @license    https://www.landofcoder.com/LICENSE-1.0.html
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
+	<menu>
+		<add id="Lof_All::lof_all" title="Landofcoder" module="Lof_All" sortOrder="12" resource="Lof_All::lof_all"/> 
+		<add id="Lof_All::license" title="Lof" module="Lof_All" sortOrder="900" resource="Lof_All::license" parent="Lof_All::lof_all" />
+		<add id="Lof_All::license_manage" title="Licenses" module="Lof_All" sortOrder="6" parent="Lof_All::license" action="adminhtml/system_config/edit/section/loflicense" resource="Lof_All::config_license"/>
+		<add id="Lof_All::market_manage" title="Market" module="Lof_All" sortOrder="6" parent="Lof_All::license" action="adminhtml/system_config/edit/section/lofmarket" resource="Lof_All::config_license"/>
+	</menu> 
+</config>
