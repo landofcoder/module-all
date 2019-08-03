@@ -16,14 +16,11 @@
  * 
  * @category   Landofcoder
  * @package    Lof_All
- * @copyright  Copyright (c) 2016 Landofcoder (https://www.landofcoder.com/)
+ * @copyright  Copyright (c) 2019 Landofcoder (https://www.landofcoder.com/)
  * @license    https://www.landofcoder.com/LICENSE-1.0.html
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <!--<head>
-    	 <css src="Lof_All::css/fix_magento2.css" />
-    </head>-->
     <body>
     	<referenceBlock name="head.additional">
 			<block class="Magento\Framework\View\Element\Template" name="lofall.head.customcss" as="lofall_head_customcss" template="Lof_All::html/head.phtml"/>
