@@ -4,7 +4,7 @@ The extension was included on all landofcoder extensions to generate admin menu
 
 ## 1. Documentation
 
-## 2. How to install SMTP Extension
+## 2. How to install Lof All Extension
 
 ### Install via composer (recommend)
 
