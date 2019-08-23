@@ -39,7 +39,8 @@ class AdminSystemConfigSave implements ObserverInterface
 	{
 		$configData        = $observer->getConfigData();
         $request = $observer->getRequest();
-        if(!$configData || ($configData && isset($configData['groups']) && !$configData['groups'])){
+        $section = $request->getParam("section");
+        if(($section && $section=="loflicense") && (!$configData || ($configData && isset($configData['groups']) && !$configData['groups'])) ){
             $groups = $request->getParam('groups');
             if($groups && isset($groups['general']) && $groups['general']){
                 $modules = $groups['general']['fields'];
@@ -47,8 +48,8 @@ class AdminSystemConfigSave implements ObserverInterface
                     foreach($modules as $key=>$item){
                         $module_license_key = isset($item['value'])?$item['value']:'';
                         if($module_license_key){
+                            $module_license_key = is_array($module_license_key)?implode(",",$module_license_key):$module_license_key;
                             $this->configWriter->save('loflicense/general/'.$key,  $module_license_key, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
-                            $this->configWriter->save('veslicense/general/'.$key,  $module_license_key, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
                         }
                     }
                 }
