@@ -23,7 +23,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
 	<system>
 		 <tab id="landofcoder" translate="label" sortOrder="400">
-            <label><![CDATA[<a href="https://landofcoder.com" target="_BLANK" title=""Magento Marketplace, Opencart Marketplace, Magento 2 Extension, Free Magento Extension, Opencart Advanced Reports">landofcoder.com</a>]]></label>
+            <label>Landofcoder Extensions</label>
         </tab>
 		<section id="lofall" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
 			<class>separator-top</class>
