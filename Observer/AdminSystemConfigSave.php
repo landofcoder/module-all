@@ -32,7 +32,9 @@ class AdminSystemConfigSave implements ObserverInterface
     protected $_cacheFrontendPool;
 
 	public function __construct(
-		\Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
 		) {
         $this->configWriter = $configWriter;
         $this->_cacheTypeList = $cacheTypeList;
