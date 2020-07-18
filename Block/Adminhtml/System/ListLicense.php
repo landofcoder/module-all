@@ -25,7 +25,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
 {
 
-    const API_URL      = 'https://landofcoder.com/api/soap/?wsdl=1';
+    const API_URL      = 'https://landofcoder.com/rest/V1/lofLicense';
     const SITE_URL      = 'https://landofcoder.com';
     const API_USERNAME = 'checklicense';
     const API_PASSWORD = 'n2w3z2y0kc';
