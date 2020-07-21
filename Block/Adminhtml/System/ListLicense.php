@@ -26,9 +26,8 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
 {
 
     const API_URL      = 'https://landofcoder.com/rest/V1/lofLicense';
-    const SITE_URL      = 'https://landofcoder.com';
-    const API_USERNAME = 'checklicense';
-    const API_PASSWORD = 'n2w3z2y0kc';
+    const SITE_URL      = 'http://bicomart.demo4coder.com';
+    const API_TOKEN = 'wupdr7wr323j7m2kyc7bggklb0c9wjxw';
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
@@ -181,6 +180,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 foreach($products as $_product){
                     if($sku == $_product['sku']){
                         $_product['extension_name'] = (string)$name;
+                        $_product['name'] = (string)$name;
                         $_product['purl'] = $xmlData->item_url;
                         $_product['item_title']     = $xmlData->item_title;
                         $_product['version']        = $xmlData->version;
@@ -190,6 +190,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 }
             }else {
                 $_product = [];
+                $_product['name'] = (string)$name;
                 $_product['extension_name'] = (string)$name;
                 $_product['purl']           = $xmlData->item_url;
                 $_product['item_title']     = $xmlData->item_title;
@@ -206,6 +207,8 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
         }
 
         if(!empty($extensions)){
+            $remoteAddress = $this->_remoteAddress->getRemoteAddress();
+            $domain        = $this->getCurrentDomain();
             $connection = $this->_resource->getConnection();
             $html .= '<div class="vlicense">';
             $html .= '<h1 style="margin-bottom: 50px;text-align: center;">LOF Licenses</h1>';
@@ -216,12 +219,6 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                     $value = $_extension['license'];
                 }
                 $value = trim($value);
-                $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
-                    \Magento\Framework\UrlInterface::URL_TYPE_WEB,
-                    $this->_storeManager->getStore()->isCurrentlySecure()
-                    );
-                $remoteAddress = $this->_remoteAddress->getRemoteAddress();
-                $domain        = $this->getDomain($baseUrl);
                 $response = $this->verifyLicense($value,$_extension['sku'], $domain, $remoteAddress);
                 $license = isset($response["license"])?$response["license"]:false;
                 /*
@@ -292,29 +289,43 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
         }
         return $this->_decorateRowHtml($element, $html);
     }
+    public function getCurrentDomain(){
+        if(!isset($this->_current_domain)){
+            $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
+                \Magento\Framework\UrlInterface::URL_TYPE_WEB,
+                $this->_storeManager->getStore()->isCurrentlySecure()
+                );
+            $this->_current_domain        = $this->getDomain($baseUrl);
+        }
+        return $this->_current_domain;
+    }
     public function getProductList() {
         try{
             //Authentication rest API magento2, get access token
-            $url = self::getListUrl();
-            $direct_url = $url."?pc_list=true";
+            $url = self::getApiListUrl();
+            $current_domain = $this->getCurrentDomain();
+            $remoteAddress = $this->_remoteAddress->getRemoteAddress();
+            $direct_url = $url."/".$current_domain.'/'.$remoteAddress;
             $response = @file_get_contents($direct_url);
+            
             if(!$response) {
                 $key_path = $this->getKeyPath();
-                $data = array("pc_list"=>true);
-                $crl = curl_init();
-                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
-                curl_setopt($crl, CURLOPT_CAPATH, $key_path);
-                curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
-                curl_setopt($crl, CURLOPT_URL, $url);
-                curl_setopt($crl, CURLOPT_HEADER, 0);
-                curl_setopt($crl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($crl, CURLOPT_POST, 1);
-                curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
+                $data = array('domain' => $current_domain, 'ip'=>$remoteAddress);
+                $data_string = json_encode($data);
+                $headers = array("Authorization: Bearer ".self::API_TOKEN);
+                echo $direct_url;
+                $crl = curl_init($direct_url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+                curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($crl, CURLOPT_HTTPHEADER, $headers);
                 $response = curl_exec($crl);
+                echo "<pre>";
+                var_dump($response);
+                die($direct_url);
                 if ($response) {
                 }
                 else {
-                    $response = @file_get_contents($url);
+                    $response = @file_get_contents($url."?domain=".$current_domain.'&ip='.$remoteAddress);
                     if(!$response) {
                         echo 'An error has occurred: ' . curl_error($crl);
                         return[];
@@ -336,19 +347,12 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $direct_url = $url."?license_key=".$license_key."&extension=".$extension.'&domain='.$domain.'&ip='.$ip;
             $response = @file_get_contents($direct_url);
             if(!$response) {
-                $key_path = $this->getKeyPath();
+                $api_url = $this->getApiVerifyUrl();
                 $data = array("license_key"=>$license_key,"extension"=>$extension,"domain"=>$domain,"ip"=>$ip);
-                $crl = curl_init();
-                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
-                curl_setopt($crl, CURLOPT_CAPATH, $key_path);
-                curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
-                curl_setopt($crl, CURLOPT_URL, $url);
-                curl_setopt($crl, CURLOPT_HEADER, 0);
-                curl_setopt($crl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($crl, CURLOPT_POST, 1);
-                curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
-                $response = curl_exec($crl);
+
+                $response = $this->_helper->makePostRequest($api_url, $data);
                 if ($response) {
+                    return (bool)$response;
                 }
                 else {
                     $url .="?license_key=".$license_key."&extension=".$extension."&domain=".$domain."&ip=".$ip;
@@ -356,11 +360,13 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                     if(!$response) {
                         echo 'An error has occurred: ' . curl_error($crl);
                         return[];
+                    }else {
+                        return json_decode($response, true);
                     }
                 }
-                curl_close($crl);
+            }else {
+                return json_decode($response, true);
             }
-            return json_decode($response, true);
         } catch(\Exception $e) {
 
         }
@@ -373,6 +379,18 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     public static function getVerifyUrl() {
         $url = ListLicense::SITE_URL;
         return $url."/license/verify";
+    }
+    public static function getApiListUrl() {
+        $url = ListLicense::SITE_URL;
+        return $url."/rest/all/V1/lofLicense/listproducts";
+    }
+    public static function getApiCheckUrl() {
+        $url = ListLicense::SITE_URL;
+        return $url."/rest/V1/lofLicense/check";
+    }
+    public static function getApiVerifyUrl(){
+        $url = ListLicense::SITE_URL;
+        return $url."/rest/V1/lofLicense/verify-license";
     }
     public function getKeyPath(){
         if(!$this->_key_path){

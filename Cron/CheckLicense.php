@@ -6,11 +6,12 @@ use Lof\All\Helper\Data;
 use Lof\All\Model\LicenseFactory;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Lof\All\Block\Adminhtml\System\ListLicense;
 
 class CheckLicense extends Action
 {
     protected $_licenseFactory;
-    protected $helper;
+    protected $_helper;
     protected $_storeManager;
 
     public function __construct(Context $context,
@@ -19,7 +20,7 @@ class CheckLicense extends Action
                                 \Magento\Store\Model\StoreManagerInterface $storeManager)
     {
         $this->_licenseFactory = $licenseFactory;
-        $this->helper = $helper;
+        $this->_helper = $helper;
         $this->_storeManager=$storeManager;
         parent::__construct($context);
     }
@@ -46,15 +47,16 @@ class CheckLicense extends Action
             "domain" => $domain,
             "product_sku" => $moduleName
         ];
+        $api_url = ListLicense::getApiCheckUrl();
+        $response = $this->_helper->makePostRequest($api_url, $data);
+        // $curl = curl_init();
 
-        $curl = curl_init();
-
-        $url = "http://lofextension.localhost/rest/V1/lofLicense/check";
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_exec($curl);
-        curl_close($curl);
+        // $url = "http://bicomart.demo4coder.com/rest/V1/lofLicense/check";
+        // curl_setopt($curl, CURLOPT_URL, $url);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        // curl_exec($curl);
+        // curl_close($curl);
     }
 
     public function getCurrentDomain(){

@@ -58,6 +58,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_coreRegistry;
 
+    protected $curl;
+
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -65,7 +67,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Filesystem $filesystem,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Module\Dir\Reader $moduleReader,
-        \Lof\All\Model\License $licnese
+        \Lof\All\Model\License $licnese,
+        \Magento\Framework\HTTP\Client\Curl $curl
     ) {
         parent::__construct($context);
         $this->_storeManager   = $storeManager;
@@ -75,7 +78,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_license        = $licnese;
         $this->_remoteAddress = $context->getRemoteAddress();
         $this->_moduleReader  = $moduleReader;
+        $this->curl = $curl;
     }
+
+    public function makePostRequest($api_url, $params = []) {
+        //to make post request
+        $this->curl->post($api_url, $params);
+        //to get response from request
+        $response = $this->curl->getBody();
+        return $response;
+   }
 
      /**
      * Return brand config value by key and store
