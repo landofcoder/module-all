@@ -1,18 +1,18 @@
 <?php
 /**
  * Landofcoder
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the landofcoder.com license that is
  * available through the world-wide-web at this URL:
  * https://landofcoder.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Landofcoder
  * @package    Ves_All
  * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
@@ -24,6 +24,11 @@ namespace Lof\All\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\Cache\StateInterface;
+use Magento\Framework\App\Cache\Type\Config;
+use Magento\Config\App\Config\Type\System;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class AdminSystemConfigSave implements ObserverInterface
 {
@@ -50,6 +55,35 @@ class AdminSystemConfigSave implements ObserverInterface
         }
     }
 
+    /**
+     *
+     */
+    public function flushConfigCache()
+    {
+        if (class_exists(System::class)) {
+            $this->objectManager->get(System::class)->clean();
+        } else {
+            $this->objectManager->get(Config::class)
+                ->clean(
+                    \Zend_Cache::CLEANING_MODE_MATCHING_TAG,
+                    ['config_scopes']
+                );
+        }
+    }
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function isCacheEnabled($type)
+    {
+        if (!isset($this->_cacheEnabled)) {
+            $this->_cacheEnabled = $this->_state->isEnabled($type);
+        }
+
+        return $this->_cacheEnabled;
+    }
+
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$configData        = $observer->getConfigData();
@@ -67,10 +101,11 @@ class AdminSystemConfigSave implements ObserverInterface
                             $this->configWriter->save('loflicense/general/'.$key,  $module_license_key, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
                         }
                     }
+                    $this->flushConfigCache();
                     $this->flushCache();
                 }
             }
         }
-		
+
 	}
 }
