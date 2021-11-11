@@ -1,18 +1,18 @@
 <?php
 /**
  * Landofcoder
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the landofcoder.com license that is
  * available through the world-wide-web at this URL:
  * https://landofcoder.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Landofcoder
  * @package    Ves_All
  * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
@@ -24,6 +24,11 @@ namespace Lof\All\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\Cache\StateInterface;
+use Magento\Framework\App\Cache\Type\Config;
+use Magento\Config\App\Config\Type\System;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class AdminSystemConfigSave implements ObserverInterface
 {
@@ -40,13 +45,31 @@ class AdminSystemConfigSave implements ObserverInterface
         $this->_cacheTypeList = $cacheTypeList;
         $this->_cacheFrontendPool = $cacheFrontendPool;
     }
-    protected function flushCache(){
+
+    protected function flushCache()
+    {
         $types = array('config','layout','block_html','full_page');
         foreach ($types as $type) {
             $this->_cacheTypeList->cleanType($type);
         }
         foreach ($this->_cacheFrontendPool as $cacheFrontend) {
             $cacheFrontend->getBackend()->clean();
+        }
+    }
+
+    /**
+     *
+     */
+    public function flushConfigCache()
+    {
+        if (class_exists(System::class)) {
+            $this->objectManager->get(System::class)->clean();
+        } else {
+            $this->objectManager->get(Config::class)
+                ->clean(
+                    \Zend_Cache::CLEANING_MODE_MATCHING_TAG,
+                    ['config_scopes']
+                );
         }
     }
 
@@ -71,6 +94,6 @@ class AdminSystemConfigSave implements ObserverInterface
                 }
             }
         }
-		
+
 	}
 }
