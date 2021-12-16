@@ -49,7 +49,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_filterProvider;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var \Magento\Framework\Filesystem
      */
     protected $_filesystem;
 
@@ -69,7 +69,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_moduleReader;
 
     /**
-     * @var object|mixed
+     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     protected $_remoteAddress;
 
@@ -134,6 +134,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $html;
     }
 
+    /**
+     * @param string $module_name
+     * @return string|mixed|array|bool
+     */
     public function getLicense($module_name) {
         //$ip          = $this->_remoteAddress->getRemoteAddress();
         $file        = $this->_moduleReader->getModuleDir(Dir::MODULE_ETC_DIR, $module_name) . '/license.xml';
@@ -150,8 +154,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return true;
         }
     }
+
     /**
-     * @param $data_array
+     * @param array $data_array
      * @return array
      */
     public function xss_clean_array($data_array)
@@ -167,7 +172,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $data
+     * @param string $data
      * @return string|string[]|null
      */
     public function xss_clean($data)

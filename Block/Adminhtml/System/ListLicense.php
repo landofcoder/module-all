@@ -240,8 +240,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 }
                 $value = trim($value);
                 $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
-                    \Magento\Framework\UrlInterface::URL_TYPE_WEB,
-                    $this->_storeManager->getStore()->isCurrentlySecure()
+                    \Magento\Framework\UrlInterface::URL_TYPE_WEB
                     );
                 $remoteAddress = $this->_remoteAddress->getRemoteAddress();
                 $domain        = $this->getDomain($baseUrl);
@@ -301,7 +300,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 }else{
                     $licenseData['status'] = 1;
                 }
-                $this->_license->setData($licenseData)->save();
+                $licenseResource = $this->_license->getResource();
+                $license = $this->_license->setData($licenseData);
+                $licenseResource->save($license);
                 $html .= '</div>';
                 $html .= '</div>';
                 $html .= '</div>';

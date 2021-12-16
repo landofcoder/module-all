@@ -38,7 +38,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
     protected $_key_path;
 
     /**
-     * @var
+     * @var \Lof\All\Helper\Data
      */
     protected $_helper;
 
