@@ -46,22 +46,32 @@ class CheckLicense implements ObserverInterface
      */
 	protected $_remoteAddress;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+
+    /**
+     * @var \Lof\All\Helper\Data
+     */
+    protected $licenseHelper;
+
 	/**
-	 * @param \Lof\All\Model\License                               $licnese
+	 * @param \Lof\All\Model\License                               $license
 	 * @param \Magento\Framework\Module\Dir\Reader                 $moduleReader
 	 * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
 	 * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
 	 * @param \Magento\Framework\Message\ManagerInterface          $messageManager
 	 */
 	public function __construct(
-		\Lof\All\Model\License $licnese,
+		\Lof\All\Model\License $license,
 		\Magento\Framework\Module\Dir\Reader $moduleReader,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
 		\Magento\Framework\Message\ManagerInterface $messageManager,
 		\Lof\All\Helper\Data $licenseHelper
 		) {
-		$this->_license       = $licnese;
+		$this->_license       = $license;
 		$this->_moduleReader  = $moduleReader;
 		$this->messageManager = $messageManager;
 		$this->_storeManager  = $storeManager;
@@ -87,7 +97,5 @@ class CheckLicense implements ObserverInterface
 				$obj->setData('local_valid', 0);
 			}
 		}
-
-        $obj->setData('is_valid', 1);
 	}
 }

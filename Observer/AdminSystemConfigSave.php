@@ -32,8 +32,20 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class AdminSystemConfigSave implements ObserverInterface
 {
+
+    /**
+     * @var \Magento\Framework\App\Config\Storage\WriterInterface
+     */
 	protected $configWriter;
+
+    /**
+     * @var \Magento\Framework\App\Cache\TypeListInterface
+     */
     protected $_cacheTypeList;
+
+    /**
+     * @var \Magento\Framework\App\Cache\Frontend\Pool
+     */
     protected $_cacheFrontendPool;
 
 	public function __construct(
@@ -45,7 +57,14 @@ class AdminSystemConfigSave implements ObserverInterface
         $this->_cacheTypeList = $cacheTypeList;
         $this->_cacheFrontendPool = $cacheFrontendPool;
     }
-    protected function flushCache(){
+
+    /**
+     * Flush cache
+     *
+     * @return void
+     */
+    protected function flushCache()
+    {
         $types = array('config','layout','block_html','full_page');
         foreach ($types as $type) {
             $this->_cacheTypeList->cleanType($type);
@@ -56,7 +75,7 @@ class AdminSystemConfigSave implements ObserverInterface
     }
 
     /**
-     *
+     * @return void
      */
     public function flushConfigCache()
     {
@@ -72,18 +91,11 @@ class AdminSystemConfigSave implements ObserverInterface
     }
 
     /**
-     * @param $type
-     * @return bool
+     * Execute
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     * @return void
      */
-    public function isCacheEnabled($type)
-    {
-        if (!isset($this->_cacheEnabled)) {
-            $this->_cacheEnabled = $this->_state->isEnabled($type);
-        }
-
-        return $this->_cacheEnabled;
-    }
-
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$configData        = $observer->getConfigData();
