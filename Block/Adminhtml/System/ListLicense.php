@@ -1,18 +1,18 @@
 <?php
 /**
  * Landofcoder
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
  * http://landofcoder.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Landofcoder
  * @package    Lof_All
  * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
@@ -34,16 +34,35 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
      * @var \Magento\Framework\App\ResourceConnection
      */
     protected $_resource;
+
+    /**
+     * @var string
+     */
     protected $_key_path;
+
+    /**
+     * @var \Lof\All\Helper\Data
+     */
+    protected $_helper;
+
+    /**
+     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
+     */
+    protected $_remoteAddress;
+
+    /**
+     * @var \Lof\All\Model\License
+     */
+    protected $_license;
 
     private $_list_files = [];
 
     /**
      * [__construct description]
-     * @param \Magento\Backend\Block\Template\Context              $context 
-     * @param \Magento\Framework\App\ResourceConnection            $resource      
-     * @param \Lof\All\Helper\Data                                 $helper        
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress 
+     * @param \Magento\Backend\Block\Template\Context              $context
+     * @param \Magento\Framework\App\ResourceConnection            $resource
+     * @param \Lof\All\Helper\Data                                 $helper
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -122,7 +141,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                         $vlience->delete();
                     }
                 }
-                
+
                 $licenseData = [];
                 $licenseData['extension_code'] = $sku;
                 $licenseData['extension_name'] = $name;
@@ -140,7 +159,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 \Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR
             );
         }
-    
+
         $email = $html = '';
         $products = array();
         try{
