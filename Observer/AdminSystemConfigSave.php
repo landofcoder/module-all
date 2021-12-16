@@ -32,8 +32,20 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class AdminSystemConfigSave implements ObserverInterface
 {
+
+    /**
+     * @var \Magento\Framework\App\Config\Storage\WriterInterface
+     */
 	protected $configWriter;
+
+    /**
+     * @var \Magento\Framework\App\Cache\TypeListInterface
+     */
     protected $_cacheTypeList;
+
+    /**
+     * @var \Magento\Framework\App\Cache\Frontend\Pool
+     */
     protected $_cacheFrontendPool;
 
 	public function __construct(
@@ -46,6 +58,11 @@ class AdminSystemConfigSave implements ObserverInterface
         $this->_cacheFrontendPool = $cacheFrontendPool;
     }
 
+    /**
+     * Flush cache
+     *
+     * @return void
+     */
     protected function flushCache()
     {
         $types = array('config','layout','block_html','full_page');
@@ -58,7 +75,7 @@ class AdminSystemConfigSave implements ObserverInterface
     }
 
     /**
-     *
+     * @return void
      */
     public function flushConfigCache()
     {
@@ -73,6 +90,12 @@ class AdminSystemConfigSave implements ObserverInterface
         }
     }
 
+    /**
+     * Execute
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     * @return void
+     */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$configData        = $observer->getConfigData();
