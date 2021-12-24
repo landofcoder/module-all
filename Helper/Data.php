@@ -64,6 +64,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_licenseFactory;
 
     /**
+     * @var \Lof\All\Model\ResourceModel\License
+     */
+    protected $_licenseResource;
+
+    /**
      * @var \Magento\Framework\Module\Dir\Reader
      */
     protected $_moduleReader;
@@ -80,7 +85,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Filesystem $filesystem,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Module\Dir\Reader $moduleReader,
-        \Lof\All\Model\LicenseFactory $licenseFactory
+        \Lof\All\Model\LicenseFactory $licenseFactory,
+        \Lof\All\Model\ResourceModel\License $resource
     ) {
         parent::__construct($context);
         $this->_storeManager   = $storeManager;
@@ -90,6 +96,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_licenseFactory = $licenseFactory;
         $this->_remoteAddress = $context->getRemoteAddress();
         $this->_moduleReader  = $moduleReader;
+        $this->_licenseResource = $resource;
     }
 
      /**
@@ -146,7 +153,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $xmlData     = $xmlObj->getNode();
             if ($xmlData) {
                 $code = $xmlData->code;
-                $license = $this->_licenseFactory->create()->load($code);
+                $license = $this->_licenseFactory->create();
+                $this->_licenseResource->load($license, $code);
                 return $license;
             }
             return false;

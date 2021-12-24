@@ -85,6 +85,7 @@ class AdminSystemConfigSave implements ObserverInterface
 		$configData        = $observer->getConfigData();
         $request = $observer->getRequest();
         $section = $request->getParam("section");
+        /** @phpstan-ignore-next-line */
         if (($section && $section == "loflicense") && (!$configData || ($configData && isset($configData['groups']) && !$configData['groups'])) ) {
             $groups = $request->getParam('groups');
             if ($groups && isset($groups['general']) && $groups['general']){
