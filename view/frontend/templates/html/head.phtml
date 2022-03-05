@@ -6,11 +6,10 @@ if ($customCss) {
     $customCss = trim($customCss);
 }
 ?>
-
-<?php if ($customCss) { ?>
+<?php if ($customCss) : ?>
 <!-- MEGAMENU CUSTOM CSS -->
 <style type="text/css">
-	<?php echo $customCss; ?>
+	<?= $customCss; ?>
 </style>
 <!-- MEGAMENU CUSTOM CSS -->
-<?php } ?>
+<?php endif; ?>
