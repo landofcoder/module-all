@@ -2,8 +2,8 @@
 $data = $this->helper("Lof\All\Helper\Data");
 $customCss = $data->getConfig('custom_css');
 if ($customCss) {
-    $customCss = strip_tags($customCss);
-    $customCss = trim($customCss);
+    $customCss = @strip_tags($customCss);
+    $customCss = @trim($customCss);
 }
 ?>
 <?php if ($customCss) : ?>
