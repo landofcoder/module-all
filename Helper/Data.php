@@ -109,7 +109,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      public function getConfig($key, $group = "lofall/general", $store = null)
      {
         $store     = $this->_storeManager->getStore($store);
-        $websiteId = $store->getWebsiteId();
+        //$websiteId = $store->getWebsiteId();
         if ($this->_storeManager->isSingleStoreMode()) {
             $result = $this->scopeConfig->getValue(
                 $group . '/' .$key,

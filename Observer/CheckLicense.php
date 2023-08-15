@@ -79,6 +79,9 @@ class CheckLicense implements ObserverInterface
 		$this->licenseHelper  = $licenseHelper;
 	}
 
+    /**
+     * @inheritdoc
+     */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$ip         = $this->_remoteAddress->getRemoteAddress();
