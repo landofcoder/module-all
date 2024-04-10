@@ -20,11 +20,11 @@
  */
 
 namespace Lof\All\Block\Adminhtml\System;
+
 use Magento\Framework\App\Filesystem\DirectoryList;
 
 class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     const API_URL      = 'https://landofcoder.com/api/soap/?wsdl=1';
     const SITE_URL      = 'https://landofcoder.com';
     const API_USERNAME = 'checklicense';
@@ -61,10 +61,10 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     private $_list_files = [];
 
     /**
-     * [__construct description]
-     * @param \Magento\Backend\Block\Template\Context              $context
-     * @param \Magento\Framework\App\ResourceConnection            $resource
-     * @param \Lof\All\Helper\Data                                 $helper
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Lof\All\Helper\Data $helper
+     * @param \Lof\All\Model\License $license
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
@@ -73,8 +73,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
         \Lof\All\Helper\Data $helper,
         \Lof\All\Model\License $license,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-        )
-    {
+    ) {
         parent::__construct($context);
         $this->_resource      = $resource;
         $this->_helper        = $helper;
@@ -83,13 +82,13 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * get list license files
+     * Get list license files.
      *
-     * @return mixed
+     * @return array|false
      */
     public function getListLicenseFiles()
     {
-        if(!$this->_list_files) {
+        if (!$this->_list_files) {
             $path = $this->_filesystem->getDirectoryRead(DirectoryList::APP)->getAbsolutePath('code/Lof/');
             $files = glob($path . '*/*/license.xml');
             $path2 = $this->_filesystem->getDirectoryRead(DirectoryList::ROOT)->getAbsolutePath('vendor/Lof/');
@@ -104,23 +103,22 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $path6 = $this->_filesystem->getDirectoryRead(DirectoryList::ROOT)->getAbsolutePath('vendor/magento2-modules/');
             $files6 = glob($path6 . '*/*/license.xml');
 
-
-            if(is_array($files) && $files) {
+            if (is_array($files) && $files) {
                 $this->_list_files = array_merge($this->_list_files, $files);
             }
-            if(is_array($files2) && $files2) {
+            if (is_array($files2) && $files2) {
                 $this->_list_files = array_merge($this->_list_files, $files2);
             }
-            if(is_array($files3) && $files3) {
+            if (is_array($files3) && $files3) {
                 $this->_list_files = array_merge($this->_list_files, $files3);
             }
-            if(is_array($files4) && $files4) {
+            if (is_array($files4) && $files4) {
                 $this->_list_files = array_merge($this->_list_files, $files4);
             }
-            if(is_array($files5) && $files5) {
+            if (is_array($files5) && $files5) {
                 $this->_list_files = array_merge($this->_list_files, $files5);
             }
-            if(is_array($files6) && $files6) {
+            if (is_array($files6) && $files6) {
                 $this->_list_files = array_merge($this->_list_files, $files6);
             }
         }
@@ -203,12 +201,12 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $xmlData = $xmlObj->getNode();
             $sku = $xmlData->code;
             $name = $xmlData->name;
-            if($email=='' && (string)($xmlData->email)){
+            if ($email=='' && (string)($xmlData->email)) {
                 $email = $xmlData->email;
             }
-            if($products){
-                foreach($products as $_product){
-                    if($sku == $_product['sku']){
+            if ($products) {
+                foreach ($products as $_product) {
+                    if ($sku == $_product['sku']) {
                         $_product['extension_name'] = (string)$name;
                         $_product['purl'] = $xmlData->item_url;
                         $_product['item_title']     = $xmlData->item_title;
@@ -218,7 +216,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                         break;
                     }
                 }
-            }else {
+            } else {
                 $_product = [];
                 $_product['extension_name'] = (string)$name;
                 $_product['purl']           = $xmlData->item_url;
@@ -235,26 +233,26 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             throw new \RuntimeException(__('Something went wrong while validating license. Please contact %1', $email));
         }
 
-        if(!empty($extensions)){
+        if (!empty($extensions)) {
             $connection = $this->_resource->getConnection();
             $html .= '<div class="vlicense">';
             $html .= '<h1 style="margin-bottom: 50px;text-align: center;">LOF Licenses</h1>';
             foreach ($extensions as $_extension) {
                 $name = str_replace('[licenses]', '[' . str_replace(['-','_',' '], [''], $_extension['sku']) . ']', $element->getName());
-                $value = $this->_helper->getConfig('general/' . str_replace(['-','_',' '], [''], $_extension['sku']),'loflicense',null);
-                if(!$value && isset($_extension['license']) && $_extension['license']){
+                $value = $this->_helper->getConfig('general/' . str_replace(['-','_',' '], [''], $_extension['sku']), 'loflicense', null);
+                if (!$value && isset($_extension['license']) && $_extension['license']) {
                     $value = $_extension['license'];
                 }
-                if(!$value && isset($_extension['key']) && $_extension['key']){
+                if (!$value && isset($_extension['key']) && $_extension['key']) {
                     $value = $_extension['key'];
                 }
                 $value = @trim($value);
                 $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
                     \Magento\Framework\UrlInterface::URL_TYPE_WEB
-                    );
+                );
                 $remoteAddress = $this->_remoteAddress->getRemoteAddress();
                 $domain        = $this->getDomain($baseUrl);
-                $response = $this->verifyLicense($value,$_extension['sku'], $domain, $remoteAddress);
+                $response = $this->verifyLicense($value, $_extension['sku'], $domain, $remoteAddress);
                 $license = isset($response["license"])?$response["license"]:false;
                 /*
                 $license       = $proxy->call($sessionId, 'veslicense.active', array($value, $_extension['sku'], $domain, $remoteAddress));*/
@@ -277,37 +275,37 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 $html .= '<span class="plicense"><strong>License Serial</strong></span>';
                 $html .= '<div><input type="text" name="' . $name . '" value="' . $value . '"/></div>';
                 $html .= '<div class="pmeta">';
-                if(!empty($license) && $license['is_valid']){
+                if (!empty($license) && $license['is_valid']) {
                     $html .= '<p><strong>Status: </strong><span class="pvalid">Valid</span></p>';
-                }else{
+                } else {
                     $html .= '<p><strong>Status: </strong><span class="pinvalid">Invalid</span></p>';
                 }
-                if(!empty($license) && isset($license['description'])){
+                if (!empty($license) && isset($license['description'])) {
                     $html .= $license['description'];
                 }
-                if(!empty($license) && isset($license['created_at'])){
+                if (!empty($license) && isset($license['created_at'])) {
                     $html .= '<p><strong>Activation Date:</strong> ' . $license['created_at'] . '</p>';
                 }
-                if(!empty($license) && isset($license['expired_time'])){
+                if (!empty($license) && isset($license['expired_time'])) {
                     $html .= '<p><strong>Expiration Date:</strong> ' . $license['expired_time'] . '</p>';
                 }
                 $html .= '</div>';
                 $licenseCollection = $this->_license->getCollection();
                 foreach ($licenseCollection as $klience => $vlience) {
-                    if($vlience->getData('extension_code') == $_extension['sku']){
+                    if ($vlience->getData('extension_code') == $_extension['sku']) {
                         $vlience->delete();
                     }
                 }
                 $licenseData = [];
-                if(isset($_extension['sku'])){
+                if (isset($_extension['sku'])) {
                     $licenseData['extension_code'] = $_extension['sku'];
                 }
-                if(isset($_extension['name'])){
+                if (isset($_extension['name'])) {
                     $licenseData['extension_name'] = $_extension['name'];
                 }
-                if(empty($license) || !$license['is_valid']){
+                if (empty($license) || !$license['is_valid']) {
                     $licenseData['status'] = 0;
-                }else{
+                } else {
                     $licenseData['status'] = 1;
                 }
                 $licenseResource = $this->_license->getResource();
@@ -318,7 +316,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 $html .= '</div>';
             }
             $html .= '</div>';
-        }else{
+        } else {
             $licenseCollection = $this->_license->getCollection();
             foreach ($licenseCollection as $klience => $vlience) {
                 $vlience->delete();
@@ -339,9 +337,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $response = @file_get_contents($direct_url);
             if (!$response) {
                 $key_path = $this->getKeyPath();
-                $data = array("pc_list"=>true);
+                $data = ["pc_list"=>true];
                 $crl = curl_init();
-                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, true);
                 curl_setopt($crl, CURLOPT_CAPATH, $key_path);
                 curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
                 curl_setopt($crl, CURLOPT_URL, $url);
@@ -351,10 +349,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
                 $response = curl_exec($crl);
                 if ($response) {
-                }
-                else {
+                } else {
                     $response = @file_get_contents($url);
-                    if(!$response) {
+                    if (!$response) {
                         echo 'An error has occurred: ' . curl_error($crl);
                         return[];
                     }
@@ -362,14 +359,15 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 curl_close($crl);
             }
             return json_decode($response, true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
         }
         return [];
     }
 
     /**
-     * verify license
+     * Verify license.
+     *
      * @param string $license_key
      * @param string $extension
      * @param string $domain
@@ -378,16 +376,16 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function verifyLicense($license_key, $extension, $domain, $ip)
     {
-        try{
+        try {
             //Authentication rest API magento2, get access token
             $url = self::getVerifyUrl();
             $direct_url = $url."?license_key=".$license_key."&extension=".$extension.'&domain='.$domain.'&ip='.$ip;
             $response = @file_get_contents($direct_url);
-            if(!$response) {
+            if (!$response) {
                 $key_path = $this->getKeyPath();
-                $data = array("license_key"=>$license_key,"extension"=>$extension,"domain"=>$domain,"ip"=>$ip);
+                $data = ["license_key"=>$license_key,"extension"=>$extension,"domain"=>$domain,"ip"=>$ip];
                 $crl = curl_init();
-                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, true);
                 curl_setopt($crl, CURLOPT_CAPATH, $key_path);
                 curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
                 curl_setopt($crl, CURLOPT_URL, $url);
@@ -397,11 +395,10 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
                 $response = curl_exec($crl);
                 if ($response) {
-                }
-                else {
+                } else {
                     $url .="?license_key=".$license_key."&extension=".$extension."&domain=".$domain."&ip=".$ip;
                     $response = @file_get_contents($url);
-                    if(!$response) {
+                    if (!$response) {
                         echo 'An error has occurred: ' . curl_error($crl);
                         return[];
                     }
@@ -409,13 +406,15 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 curl_close($crl);
             }
             return json_decode($response, true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
         }
         return [];
     }
 
     /**
+     * Get the list URL.
+     *
      * @return string
      */
     public static function getListUrl()
@@ -425,6 +424,8 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * Get Verify URL.
+     *
      * @return string
      */
     public static function getVerifyUrl()
@@ -434,13 +435,15 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * Get key path.
+     *
      * @return string
      */
     public function getKeyPath()
     {
-        if(!$this->_key_path){
+        if (!$this->_key_path) {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+            $directory = $objectManager->get(\Magento\Framework\Filesystem\DirectoryList::classs);
             $base_url = $directory->getRoot();
             $this->_key_path = $base_url."/veslicense/cacert.pem";
         }
@@ -448,7 +451,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * get domain
+     * Get domain.
      *
      * @param string $domain
      * @return string
@@ -457,8 +460,8 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
     {
         $domain = strtolower($domain);
         $domain = str_replace(['www.','WWW.','https://','http://','https','http'], [''], $domain);
-        if($this->endsWith($domain, '/')){
-            $domain = substr_replace($domain ,"",-1);
+        if ($this->endsWith($domain, '/')) {
+            $domain = substr_replace($domain, "", -1);
         }
         return $domain;
     }

@@ -1,18 +1,18 @@
 <?php
 /**
  * Landofcoder
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
  * http://landofcoder.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Landofcoder
  * @package    Lof_All
  * @copyright  Copyright (c) 2017 Landofcoder (https://www.landofcoder.com/)
@@ -30,6 +30,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-        $this->_init('Lof\All\Model\License', 'Lof\All\Model\ResourceModel\License');
+        $this->_init(
+            \Lof\All\Model\License::class,
+            \Lof\All\Model\ResourceModel\License::class
+        );
     }
 }

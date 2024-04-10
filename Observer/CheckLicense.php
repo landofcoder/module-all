@@ -22,29 +22,28 @@
 namespace Lof\All\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Module\Dir;
 
 class CheckLicense implements ObserverInterface
 {
-	/**
+    /**
      * @var \Lof\All\Model\License
      */
-	protected $_license;
+    protected $_license;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
 
-	/**
+    /**
      * @var \Magento\Framework\Module\Dir\Reader
      */
-	protected $_moduleReader;
+    protected $_moduleReader;
 
-	/**
+    /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
-	protected $_remoteAddress;
+    protected $_remoteAddress;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -56,49 +55,50 @@ class CheckLicense implements ObserverInterface
      */
     protected $licenseHelper;
 
-	/**
-	 * @param \Lof\All\Model\License                               $license
-	 * @param \Magento\Framework\Module\Dir\Reader                 $moduleReader
-	 * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
-	 * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-	 * @param \Magento\Framework\Message\ManagerInterface          $messageManager
-	 */
-	public function __construct(
-		\Lof\All\Model\License $license,
-		\Magento\Framework\Module\Dir\Reader $moduleReader,
-		\Magento\Store\Model\StoreManagerInterface $storeManager,
-		\Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-		\Magento\Framework\Message\ManagerInterface $messageManager,
-		\Lof\All\Helper\Data $licenseHelper
-		) {
-		$this->_license       = $license;
-		$this->_moduleReader  = $moduleReader;
-		$this->messageManager = $messageManager;
-		$this->_storeManager  = $storeManager;
-		$this->_remoteAddress = $remoteAddress;
-		$this->licenseHelper  = $licenseHelper;
-	}
+    /**
+     * @param \Lof\All\Model\License $license
+     * @param \Magento\Framework\Module\Dir\Reader $moduleReader
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param \Lof\All\Helper\Data $licenseHelper
+     */
+    public function __construct(
+        \Lof\All\Model\License $license,
+        \Magento\Framework\Module\Dir\Reader $moduleReader,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Lof\All\Helper\Data $licenseHelper
+    ) {
+        $this->_license       = $license;
+        $this->_moduleReader  = $moduleReader;
+        $this->messageManager = $messageManager;
+        $this->_storeManager  = $storeManager;
+        $this->_remoteAddress = $remoteAddress;
+        $this->licenseHelper  = $licenseHelper;
+    }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-	public function execute(\Magento\Framework\Event\Observer $observer)
-	{
-		$ip         = $this->_remoteAddress->getRemoteAddress();
-		$obj        = $observer->getObj();
-		$moduleName = $observer->getEx();
-		$license    = $this->licenseHelper->getLicense($moduleName);
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        $ip         = $this->_remoteAddress->getRemoteAddress();
+        $obj        = $observer->getObj();
+        $moduleName = $observer->getEx();
+        $license    = $this->licenseHelper->getLicense($moduleName);
 
-		if (($license && is_bool($license)) || ($license && $license->getStatus())) {
-			$obj->setData('is_valid', 1);
+        if (($license && is_bool($license)) || ($license && $license->getStatus())) {
+            $obj->setData('is_valid', 1);
 
-		} else {
-			$obj->setData('is_valid',0);
-			if ($ip == '127.0.0.1') {
-				$obj->setData('local_valid', 1);
-			} else {
-				$obj->setData('local_valid', 0);
-			}
-		}
-	}
+        } else {
+            $obj->setData('is_valid', 0);
+            if ($ip == '127.0.0.1') {
+                $obj->setData('local_valid', 1);
+            } else {
+                $obj->setData('local_valid', 0);
+            }
+        }
+    }
 }

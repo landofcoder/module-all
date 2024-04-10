@@ -21,12 +21,8 @@
 
 namespace Lof\All\Block\Adminhtml\System;
 
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Lof\All\Block\Adminhtml\System\ListLicense;
-
 class Market extends \Magento\Config\Block\System\Config\Form\Field
 {
-
     /**
      * @var \Magento\Framework\App\ResourceConnection
      */
@@ -53,10 +49,10 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
     protected $_license;
 
     /**
-     * [__construct description]
-     * @param \Magento\Backend\Block\Template\Context              $context
-     * @param \Magento\Framework\App\ResourceConnection            $resource
-     * @param \Lof\All\Helper\Data                                 $helper
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Lof\All\Helper\Data $helper
+     * @param \Lof\All\Model\License $license
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
@@ -65,8 +61,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         \Lof\All\Helper\Data $helper,
         \Lof\All\Model\License $license,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-        )
-    {
+    ) {
         parent::__construct($context);
         $this->_resource      = $resource;
         $this->_helper        = $helper;
@@ -122,15 +117,15 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         $html .= '<div id="lof-elist">';
         $html .=  '<h1><a href="https://landofcoder.com">Landofcoder.com - Opensource Marketplace for magento, opencart</a></h1>';
         foreach ($products as $_product) {
-            if( $column == 1 || $x%$column == 0){
+            if ($column == 1 || $x%$column == 0) {
                 $html .= '<div class="erow">';
             }
             $class = '';
-            if( $column == 1 || ($x+1)%$column == 0 || $x == ($total-1) ) {
+            if ($column == 1 || ($x+1)%$column == 0 || $x == ($total-1)) {
                 $class = ' last';
             }
 
-            if ($_product['price']==0 || $_product['price']=="" ||$_product['price']=="0.00" || $_product['price']=="$0.00" || !$_product['price']) {
+            if ($_product['price']==0 || $_product['price']=="" || $_product['price']=="0.00" || $_product['price']=="$0.00" || !$_product['price']) {
                 $price = 'FREE';
             } else {
                 $price = $_product['price_currency'];
@@ -142,7 +137,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
             $html .= '<div class="extend-card-desc"><a href="' . $_product['purl'] . '" title="' . $_product['name'] . '"><h3>' .  $_product['name'] . '</h3></a><div class="extend-price">' . $price . '</div></div><div class="extend-des"> <div class="extend-des-inner"> ' . $_product['short_description'] . '</div> <a href="' . $_product['purl'] . '" title="' . $_product['name'] . '" class="extend-buynow" style="float: left;">Buy Now</a></div>';
             $html .= '</div>';
             $html .= '</div>';
-            if( $column == 1 || ($x+1)%$column == 0 || $x == ($total-1) ) {
+            if ($column == 1 || ($x+1)%$column == 0 || $x == ($total-1)) {
                 $html .= '</div>';
             }
             $x++;
@@ -151,13 +146,20 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
 
         return $this->_decorateRowHtml($element, $html);
     }
-    public function getProductList() {
+
+    /**
+     * Get product list.
+     *
+     * @return array|mixed
+     */
+    public function getProductList()
+    {
         //Authentication rest API magento2, get access token
         $url = ListLicense::getListUrl();
         $key_path = $this->getKeyPath();
-        $data = array();
+        $data = [];
         $crl = curl_init();
-        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($crl, CURLOPT_CAPATH, $key_path);
         curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($crl, CURLOPT_URL, $url);
@@ -167,8 +169,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
         $response = curl_exec($crl);
         if ($response) {
-        }
-        else {
+        } else {
             echo 'An error has occurred: ' . curl_error($crl);
             return[];
         }
@@ -177,24 +178,47 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         return json_decode($response, true);
     }
 
-    public function getKeyPath(){
-        if(!$this->_key_path){
+    /**
+     * Get key path.
+     *
+     * @return string
+     */
+    public function getKeyPath()
+    {
+        if (!$this->_key_path) {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+            $directory = $objectManager->get(\Magento\Framework\Filesystem\DirectoryList::class);
             $base_url = $directory->getRoot();
             $this->_key_path = $base_url."/veslicense/cacert.pem";
         }
         return $this->_key_path;
     }
-    public function getDomain($domain) {
+
+    /**
+     * Get domain.
+     *
+     * @param string|string[] $domain
+     * @return array|string|string[]
+     */
+    public function getDomain($domain)
+    {
         $domain = strtolower($domain);
         $domain = str_replace(['www.','WWW.','https://','http://','https','http'], [''], $domain);
-        if($this->endsWith($domain, '/')){
-            $domain = substr_replace($domain ,"",-1);
+        if ($this->endsWith($domain, '/')) {
+            $domain = substr_replace($domain, "", -1);
         }
         return $domain;
     }
-    public function endsWith($haystack, $needle) {
+
+    /**
+     * Ends With
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @return bool
+     */
+    public function endsWith($haystack, $needle)
+    {
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
     }
 }

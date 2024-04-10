@@ -36,7 +36,7 @@ class AdminSystemConfigSave implements ObserverInterface
     /**
      * @var \Magento\Framework\App\Config\Storage\WriterInterface
      */
-	protected $configWriter;
+    protected $configWriter;
 
     /**
      * @var \Magento\Framework\App\Cache\TypeListInterface
@@ -48,11 +48,16 @@ class AdminSystemConfigSave implements ObserverInterface
      */
     protected $_cacheFrontendPool;
 
-	public function __construct(
+    /**
+     * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+     */
+    public function __construct(
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
-		) {
+    ) {
         $this->configWriter = $configWriter;
         $this->_cacheTypeList = $cacheTypeList;
         $this->_cacheFrontendPool = $cacheFrontendPool;
@@ -65,7 +70,7 @@ class AdminSystemConfigSave implements ObserverInterface
      */
     protected function flushCache()
     {
-        $types = array('config','layout','block_html','full_page');
+        $types = ['config','layout','block_html','full_page'];
         foreach ($types as $type) {
             $this->_cacheTypeList->cleanType($type);
         }
@@ -80,28 +85,35 @@ class AdminSystemConfigSave implements ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      * @return void
      */
-	public function execute(\Magento\Framework\Event\Observer $observer)
-	{
-		$configData        = $observer->getConfigData();
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        $configData = $observer->getConfigData();
         $request = $observer->getRequest();
         $section = $request->getParam("section");
         /** @phpstan-ignore-next-line */
-        if (($section && $section == "loflicense") && (!$configData || ($configData && isset($configData['groups']) && !$configData['groups'])) ) {
+        if (($section && $section == "loflicense") &&
+            (!$configData || ($configData && isset($configData['groups']) && !$configData['groups']))) {
             $groups = $request->getParam('groups');
-            if ($groups && isset($groups['general']) && $groups['general']){
+            if ($groups && isset($groups['general']) && $groups['general']) {
                 $modules = $groups['general']['fields'];
                 if ($modules) {
-                    foreach ($modules as $key=>$item) {
+                    foreach ($modules as $key => $item) {
                         $module_license_key = isset($item['value'])?$item['value']:'';
                         if ($module_license_key) {
-                            $module_license_key = is_array($module_license_key)?implode(",",$module_license_key):$module_license_key;
-                            $this->configWriter->save('loflicense/general/'.$key,  $module_license_key, ScopeConfigInterface::SCOPE_TYPE_DEFAULT, 0);
+                            $module_license_key = is_array($module_license_key)
+                                ? implode(",", $module_license_key)
+                                :$module_license_key;
+                            $this->configWriter->save(
+                                'loflicense/general/'.$key,
+                                $module_license_key,
+                                ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                                0
+                            );
                         }
                     }
                     $this->flushCache();
                 }
             }
         }
-
-	}
+    }
 }

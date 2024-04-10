@@ -21,7 +21,7 @@
 
 namespace Lof\All\Helper;
 
-use Magento\Framework\App\Filesystem\DirectoryList;
+use Exception;
 use Magento\Framework\Module\Dir;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
@@ -37,8 +37,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_config = [];
 
     /**
-     * Template filter factory
-     *
      * @var \Magento\Catalog\Model\Template\Filter\Factory
      */
     protected $_templateFilterFactory;
@@ -78,6 +76,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_remoteAddress;
 
+    /**
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Cms\Model\Template\FilterProvider $filterProvider
+     * @param \Magento\Framework\Filesystem $filesystem
+     * @param \Magento\Framework\Registry $registry
+     * @param Dir\Reader $moduleReader
+     * @param \Lof\All\Model\LicenseFactory $licenseFactory
+     * @param \Lof\All\Model\ResourceModel\License $resource
+     */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -100,55 +108,67 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
      /**
-     * Return brand config value by key and store
-     *
-     * @param string $key
-     * @param \Magento\Store\Model\Store|int|string $store
-     * @return string|null
-     */
-     public function getConfig($key, $group = "lofall/general", $store = null)
-     {
+      * Return brand config value by key and store
+      *
+      * @param string $key
+      * @param string $group
+      * @param \Magento\Store\Model\Store|int|string $store
+      * @return string|null
+      */
+    public function getConfig($key, $group = "lofall/general", $store = null)
+    {
         $store     = $this->_storeManager->getStore($store);
         //$websiteId = $store->getWebsiteId();
         if ($this->_storeManager->isSingleStoreMode()) {
             $result = $this->scopeConfig->getValue(
                 $group . '/' .$key,
                 \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES
-                );
+            );
         } else {
             $result = $this->scopeConfig->getValue(
                 $group . '/' .$key,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $store);
+                $store
+            );
         }
-        if(!$result){
+        if (!$result) {
             $result = $this->scopeConfig->getValue(
                 $group . '/' .$key,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                null);
+                null
+            );
         }
-        if(!$result){
+        if (!$result) {
             $result = $this->scopeConfig->getValue(
-                $group . '/' .$key);
+                $group . '/' .$key
+            );
         }
 
         return $result;
     }
 
+    /**
+     * Filter
+     *
+     * @param string $str
+     * @return string
+     * @throws Exception
+     */
     public function filter($str)
     {
-        $html = $this->_filterProvider->getPageFilter()->filter($str);
-        return $html;
+        return $this->_filterProvider->getPageFilter()->filter($str);
     }
 
     /**
-     * @param string $module_name
+     * Get License.
+     *
+     * @param string $moduleName
      * @return string|mixed|array|bool
      */
-    public function getLicense($module_name) {
-        //$ip          = $this->_remoteAddress->getRemoteAddress();
-        $file        = $this->_moduleReader->getModuleDir(Dir::MODULE_ETC_DIR, $module_name) . '/license.xml';
-        if(file_exists($file)) {
+    public function getLicense($moduleName)
+    {
+        $file        = $this->_moduleReader->getModuleDir(Dir::MODULE_ETC_DIR, $moduleName) . '/license.xml';
+        if (file_exists($file)) {
             $xmlObj      = new \Magento\Framework\Simplexml\Config($file);
             $xmlData     = $xmlObj->getNode();
             if ($xmlData) {
@@ -164,15 +184,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param array $data_array
+     * Get Xss Clean Array.
+     *
+     * @param array $dataArray
      * @return array
      */
-    public function xss_clean_array($data_array)
+    public function xssCleanArray($dataArray)
     {
         $result = [];
-        if (is_array($data_array)) {
-            foreach ($data_array as $key => $val) {
-                $val = $this->xss_clean($val);
+        if (is_array($dataArray)) {
+            foreach ($dataArray as $key => $val) {
+                $val = $this->xssClean($val);
                 $result[$key] = $val;
             }
         }
@@ -180,10 +202,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get Xss Clean.
+     *
      * @param string $data
      * @return string|string[]|null
      */
-    public function xss_clean($data)
+    public function xssClean($data)
     {
         if (!is_string($data)) {
             return $data;
