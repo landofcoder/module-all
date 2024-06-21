@@ -3,9 +3,9 @@
 The extension was included on all landofcoder extensions to generate admin menu 
 
 ## 1. Documentation
-
+-
 ## 2. How to install All Extension
-
+-
 ### Install via composer (recommend)
 
 Run the following command in Magento 2 root folder:
